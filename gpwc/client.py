@@ -5,7 +5,6 @@ from http.cookiejar import MozillaCookieJar
 from pathlib import Path
 from typing import Literal, overload
 
-import requests
 from lxml import html
 
 from . import utils
@@ -29,15 +28,13 @@ class Client:
         self.load_cookies_in_session()
         self.global_data = self.get_global_data()
         self.logger.info(f"Account: {self.global_data['oPEP7c']}")
-        self.save_cookies_to_file()
 
     def __enter__(self):
         """Enter"""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Dump session cookies to file on exit"""
-        self.save_cookies_to_file()
+        """Exit"""
 
     def load_cookies_in_session(self) -> None:
         """Load cookies from cookies.txt and upate session cookies with them"""
@@ -61,12 +58,6 @@ class Client:
         cookie_jar = MozillaCookieJar(path)
         cookie_jar.load(ignore_discard=True, ignore_expires=True)
         return cookie_jar
-
-    def save_cookies_to_file(self) -> None:
-        """Save sesion cookies to file in netscape format"""
-        cookie_jar = MozillaCookieJar(self.cookies_txt_path)
-        requests.utils.cookiejar_from_dict({c.name: c.value for c in self.session.cookies}, cookie_jar)
-        cookie_jar.save(ignore_discard=True, ignore_expires=True)
 
     def prepare_payload(self, payload: Payload) -> list:
         """Prepare payload for api request"""
