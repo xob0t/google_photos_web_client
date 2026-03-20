@@ -1,6 +1,6 @@
 import logging
-from typing import Any
 import uuid
+from typing import Any
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -18,9 +18,9 @@ def safe_get(data: dict | list, *keys: Any, default: Any = None) -> Any:
     """
     current = data
     for key in keys:
-        if isinstance(current, dict) and key in current:
-            current = current[key]
-        elif isinstance(current, list) and isinstance(key, int) and -len(current) <= key < len(current):
+        if (isinstance(current, dict) and key in current) or (
+            isinstance(current, list) and isinstance(key, int) and -len(current) <= key < len(current)
+        ):
             current = current[key]
         else:
             return default

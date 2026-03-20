@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from gpwc import Client, payloads
 from gpwc.models import DriveMedia
@@ -62,7 +63,7 @@ class TestClient(unittest.TestCase):
             print(r.data)
             resp = client.session.get(r.data.download_url)
             print(resp.status_code)
-            with open("file.zip", "wb") as f:
+            with Path("file.zip").open("wb") as f:
                 f.write(resp.content)
         print(response)
 
@@ -98,7 +99,10 @@ class TestClient(unittest.TestCase):
 
     def test_AddItemsToExistingAlbum(self):
         """Client test."""
-        payload = payloads.AddItemsToExistingAlbum(["AF1QipNX93h-CBi0yOcWkFIyoHngW6YxBsH9L4fl_3zR"], "AF1QipMoOvrCbXgb0tA5j4dy6Cpx6OycXUulbWpvMaBD")
+        payload = payloads.AddItemsToExistingAlbum(
+            ["AF1QipNX93h-CBi0yOcWkFIyoHngW6YxBsH9L4fl_3zR"],
+            "AF1QipMoOvrCbXgb0tA5j4dy6Cpx6OycXUulbWpvMaBD",
+        )
         with Client(self.cookies_txt) as client:
             response = client.send_api_request([payload])
         for r in response:
@@ -285,7 +289,12 @@ class TestClient(unittest.TestCase):
 
     def test_GetBatchMediaInfo(self):
         """Client test."""
-        payload = payloads.GetBatchMediaInfo(["AF1QipN-pG0lbvzcuWrM2V4cMgorke21AVWIL-KPSj4P", "AF1QipMohHAqtyGq4IQsgYrnGvnaQG8e5E4Hzu3YBG6x"])
+        payload = payloads.GetBatchMediaInfo(
+            [
+                "AF1QipN-pG0lbvzcuWrM2V4cMgorke21AVWIL-KPSj4P",
+                "AF1QipMohHAqtyGq4IQsgYrnGvnaQG8e5E4Hzu3YBG6x",
+            ]
+        )
         with Client(self.cookies_txt) as client:
             response = client.send_api_request([payload])
         for r in response:

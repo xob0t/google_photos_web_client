@@ -1,10 +1,9 @@
-from typing import Literal, Optional, TYPE_CHECKING, overload, Any
 from abc import ABC
-
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from . import parser
-from .utils import generate_id
 from .models import ApiResponse, DriveMedia
+from .utils import generate_id
 
 if TYPE_CHECKING:
     from .client import Client
@@ -27,8 +26,8 @@ class Payload(ABC):
 class GetLibraryPageByTakenDate(Payload):
     def __init__(
         self,
-        timestamp: Optional[int] = None,
-        page_id: Optional[str] = None,
+        timestamp: int | None = None,
+        page_id: str | None = None,
         source: Literal["library", "archive", "both"] = "both",
         page_size: int = 500,
         parse_response: bool = True,
@@ -49,7 +48,7 @@ class GetLibraryPageByTakenDate(Payload):
 class GetLibarayPageByUploadedDate(Payload):
     def __init__(
         self,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -68,7 +67,7 @@ class GetSearchPage(Payload):
     def __init__(
         self,
         query: str,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -125,7 +124,7 @@ class GetItemInfoExt(Payload):
     def __init__(
         self,
         media_key: str,
-        auth_key: Optional[str] = None,
+        auth_key: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -150,7 +149,9 @@ class GetBatchMediaInfo(Payload):
         self.parse_response = parse_response
         keys = [[key] for key in media_keys]
         self.rpcid = "EWgK9e"
-        self.data = [[[keys], [[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, [], None, None, None, None, None, None, None, None, None, None, []]]]]
+        self.data = [
+            [[keys], [[*([None] * 24), [], *([None] * 10), []]]],
+        ]
 
     class ApiResponse(ApiResponse):
         data: list[parser.ItemInfoBatch]
@@ -271,7 +272,10 @@ class SetItemGeoData(Payload):
         super().__init__()
         self.rpcid = "EtUHOe"
         dedup_key_list = [[None, key] for key in dedup_keys]
-        self.data = [dedup_key_list, [2, center_point, [visible_point_1, visible_point_2], [None, None, scale], gmaps_place_id]]
+        self.data = [
+            dedup_key_list,
+            [2, center_point, [visible_point_1, visible_point_2], [None, None, scale], gmaps_place_id],
+        ]
 
 
 class DeleteItemGeoData(Payload):
@@ -288,7 +292,7 @@ class DeleteItemGeoData(Payload):
 class GetFavoritesPage(Payload):
     def __init__(
         self,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -306,7 +310,7 @@ class GetFavoritesPage(Payload):
 class GetTrashPage(Payload):
     def __init__(
         self,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -324,8 +328,8 @@ class GetTrashPage(Payload):
 class GetAlbumsPage(Payload):
     def __init__(
         self,
-        page_id: Optional[str] = None,
-        page_size: Optional[int] = 100,
+        page_id: str | None = None,
+        page_size: int | None = 100,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -344,8 +348,8 @@ class GetAlbumPage(Payload):
     def __init__(
         self,
         media_key: str,
-        page_id: Optional[str] = None,
-        authKey: Optional[str] = None,
+        page_id: str | None = None,
+        authKey: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -363,7 +367,7 @@ class GetAlbumPage(Payload):
 class GetSharedLinksPage(Payload):
     def __init__(
         self,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
@@ -486,7 +490,7 @@ class GetPartnerSharedMedia(Payload):
         self,
         partner_actor_id: str,
         gaia_id: str,
-        page_id: Optional[str] = None,
+        page_id: str | None = None,
         parse_response: bool = True,
     ):
         """Partner's actor_id, your account's gaia_id"""
@@ -516,7 +520,7 @@ class SavePartnerSharedMedia(Payload):
 class GetUnsupportedVideos(Payload):
     def __init__(
         self,
-        page_token: Optional[str] = None,
+        page_token: str | None = None,
         parse_response: bool = True,
     ):
         """Get list of unsupported videos in the library"""

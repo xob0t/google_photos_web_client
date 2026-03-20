@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional
+
 from .utils import safe_get
 
 
 @dataclass
 class GeoLocation:
-    coordinates: Optional[list[float]] = None
-    name: Optional[str] = None
-    map_thumb: Optional[str] = None
+    coordinates: list[float] | None = None
+    name: str | None = None
+    map_thumb: str | None = None
 
     @classmethod
     def from_data(cls, item_data):
@@ -31,9 +31,9 @@ class LibraryItem:
     is_partial_upload: bool
     is_archived: bool
     is_favorite: bool
-    video_duration: Optional[int]
-    description_short: Optional[str]
-    live_photo_duration: Optional[int]
+    video_duration: int | None
+    description_short: str | None
+    live_photo_duration: int | None
     is_owned: bool
     geo_location: GeoLocation
 
@@ -68,8 +68,8 @@ class LibraryItem:
 @dataclass
 class LibraryTimelinePage:
     items: list[LibraryItem]
-    next_page_id: Optional[str]
-    last_item_timestamp: Optional[int]
+    next_page_id: str | None
+    last_item_timestamp: int | None
 
     @classmethod
     def from_data(cls, data):
@@ -83,7 +83,7 @@ class LibraryTimelinePage:
 @dataclass
 class LibraryGenericPage:
     items: list[LibraryItem]
-    next_page_id: Optional[str]
+    next_page_id: str | None
 
     @classmethod
     def from_data(cls, data):
@@ -103,7 +103,7 @@ class TrashItem:
     dedup_key: str
     timezone_offset: int
     creation_timestamp: int
-    video_duration: Optional[int]
+    video_duration: int | None
 
     @classmethod
     def from_data(cls, item_data):
@@ -123,7 +123,7 @@ class TrashItem:
 @dataclass
 class TrashPage:
     items: list[TrashItem]
-    next_page_id: Optional[str]
+    next_page_id: str | None
 
     @classmethod
     def from_data(cls, data):
@@ -144,8 +144,8 @@ class RemoteMatch:
     dedup_key: str
     timezone_offset: int
     creation_timestamp: int
-    video_duration: Optional[int]
-    camera_info: Optional[str]
+    video_duration: int | None
+    camera_info: str | None
 
     @classmethod
     def from_data(cls, item_data):
@@ -183,10 +183,10 @@ class ItemInfo:
     is_favorite: bool
     thumbnail_url: str
     description_full: str
-    video_duration: Optional[int]
-    live_photo_duration: Optional[int]
-    live_photo_video_download_url: Optional[str]
-    trash_timestamp: Optional[int]
+    video_duration: int | None
+    live_photo_duration: int | None
+    live_photo_video_download_url: str | None
+    trash_timestamp: int | None
 
     @classmethod
     def from_data(cls, item_data):
@@ -221,11 +221,11 @@ class ItemInfo:
 
 @dataclass
 class Actor:
-    actor_id: Optional[str]
-    gaia_id: Optional[str]
-    name: Optional[str]
-    gender: Optional[str]
-    profile_photo_url: Optional[str]
+    actor_id: str | None
+    gaia_id: str | None
+    name: str | None
+    gender: str | None
+    profile_photo_url: str | None
 
     @classmethod
     def from_data(cls, data):
@@ -241,14 +241,14 @@ class Actor:
 @dataclass
 class Album:
     media_key: str
-    owner_actor_id: Optional[str]
-    title: Optional[str]
+    owner_actor_id: str | None
+    title: str | None
     thumbnail_url: str
     item_count: int
     is_shared: bool
     creation_timestamp: int
     modified_timestamp: int
-    timestamp_range: Optional[list[Optional[int]]]
+    timestamp_range: list[int | None] | None
 
     @classmethod
     def from_data(cls, item_data):
@@ -271,7 +271,7 @@ class Album:
 @dataclass
 class AlbumsPage:
     items: list[Album]
-    next_page_id: Optional[str]
+    next_page_id: str | None
 
     @classmethod
     def from_data(cls, data):
@@ -309,7 +309,7 @@ class SharedLink:
 @dataclass
 class SharedLinksPage:
     items: list[SharedLink]
-    next_page_id: Optional[str]
+    next_page_id: str | None
 
     @classmethod
     def from_data(cls, data):
@@ -321,24 +321,24 @@ class SharedLinksPage:
 
 @dataclass
 class ItemInfoExt:
-    media_key: Optional[str]
-    dedup_key: Optional[str]
-    description_full: Optional[str]
-    file_name: Optional[str]
-    timestamp: Optional[int]
-    timezone_offset: Optional[int]
-    size: Optional[int]
-    res_width: Optional[int]
-    res_height: Optional[int]
-    camera_info: Optional[str | int]
+    media_key: str | None
+    dedup_key: str | None
+    description_full: str | None
+    file_name: str | None
+    timestamp: int | None
+    timezone_offset: int | None
+    size: int | None
+    res_width: int | None
+    res_height: int | None
+    camera_info: str | int | None
     albums: list[Album]
-    source: list[Optional[str]]
-    space_taken: Optional[int]
-    is_original_quality: Optional[bool]
+    source: list[str | None]
+    space_taken: int | None
+    is_original_quality: bool | None
     saved_to_your_photos: bool
-    owner: Optional[Actor]
-    geo_location: Optional[GeoLocation]
-    other: Optional[str]
+    owner: Actor | None
+    geo_location: GeoLocation | None
+    other: str | None
 
     @classmethod
     def from_data(cls, item_data):
@@ -383,7 +383,10 @@ class ItemInfoExt:
             source=source,
             space_taken=safe_get(item_data, 0, 30, 1),
             is_original_quality=safe_get(item_data, 0, 30, 2) == 2,
-            saved_to_your_photos=len([sub_array for sub_array in safe_get(item_data, 0, 12, default=[]) if 20 in sub_array]) == 0,
+            saved_to_your_photos=len(
+                [sub_array for sub_array in safe_get(item_data, 0, 12, default=[]) if 20 in sub_array]
+            )
+            == 0,
             owner=owner,
             geo_location=GeoLocation.from_data(item_data),
             other=safe_get(item_data, 0, 31),
@@ -400,8 +403,8 @@ class AlbumItem:
     dedup_key: str
     timezone_offset: int
     creation_timestamp: int
-    live_photo_duration: Optional[int]
-    video_duration: Optional[int]
+    live_photo_duration: int | None
+    video_duration: int | None
 
     @classmethod
     def from_data(cls, data):
@@ -425,13 +428,13 @@ class AlbumPage:
     next_page_id: str
     media_key: str
     thumbnail_url: str
-    title: Optional[str]
+    title: str | None
     owner: Actor
     item_count: int
     last_activity_timestamp: int
-    auth_key: Optional[str]
+    auth_key: str | None
     members: list[Actor]
-    timestamp_range: Optional[list[Optional[int]]]
+    timestamp_range: list[int | None] | None
 
     @classmethod
     def from_data(cls, data):
@@ -584,7 +587,7 @@ class UnsupportedVideo:
 @dataclass
 class UnsupportedVideosPage:
     items: list[UnsupportedVideo]
-    next_page_token: Optional[str]
+    next_page_token: str | None
 
     @classmethod
     def from_data(cls, data):

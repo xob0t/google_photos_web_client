@@ -1,22 +1,27 @@
 import json
-from typing import Literal, Iterable, overload
-from pathlib import Path
-from http.cookiejar import MozillaCookieJar
 import urllib.parse
+from collections.abc import Iterable
+from http.cookiejar import MozillaCookieJar
+from pathlib import Path
+from typing import Literal, overload
 
 import requests
 from lxml import html
 
 from . import utils
-from .parser import parse_response_data
 from .models import ApiResponse
+from .parser import parse_response_data
 from .payloads import Payload
 
 
 class Client:
     """Reverse engineered Google Photos web API client."""
 
-    def __init__(self, cookies_txt_path: str | Path, log_level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"] = "INFO") -> None:
+    def __init__(
+        self,
+        cookies_txt_path: str | Path,
+        log_level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"] = "INFO",
+    ) -> None:
         """ """
         self.cookies_txt_path = cookies_txt_path
         self.logger = utils.create_logger(log_level)
@@ -76,10 +81,7 @@ class Client:
     def send_api_request(self, payloads: Iterable[Payload] | Payload) -> list[ApiResponse] | ApiResponse:
         """Send an api request wiht rpc payloads"""
 
-        if isinstance(payloads, Payload):
-            _payloads = [payloads]
-        else:
-            _payloads = payloads
+        _payloads = [payloads] if isinstance(payloads, Payload) else payloads
 
         querystring = {
             "rpcids": ",".join([payload.rpcid for payload in _payloads]),

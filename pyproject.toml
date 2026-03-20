@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gpwc"
+version = "0.1"
+requires-python = ">=3.10"
+description = "Reverse engineered Google Photos Web API client"
+authors = [{ name = "xob0t" }]
+urls = { Homepage = "https://github.com/xob0t/gphotos_mobile_client" }
+dependencies = [
+    "requests",
+    "lxml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",     # Pyflakes
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "C4",    # flake8-comprehensions
+    "UP",    # pyupgrade
+    "N",     # pep8-naming
+    "PERF",  # Perflint
+    "ICN",   # flake8-import-conventions
+    "SIM",   # flake8-simplify
+    "PTH",   # flake8-use-pathlib
+    "I",     # isort
+]
+ignore = [
+    "N802",  # method names match Google API conventions
+    "N803",  # argument names match Google API conventions
+]
+
+[tool.ruff]
+line-length = 120
