@@ -11,8 +11,8 @@ class TestClient(unittest.TestCase):
     def test_execute(self):
         """Client test."""
         drive_items = [
-            DriveMedia(media_key="1HOyHxyVOZECsBRm9clwkIyuE4dor58kU", mime_type="image/png"),
-            DriveMedia(media_key="1HRO1PDbghooNmeqR9J7f1ddEcrgcz5jf", mime_type="image/png"),
+            # DriveMedia(media_key="1HOyHxyVOZECsBRm9clwkIyuE4dor58kU", mime_type="image/png"),
+            DriveMedia(media_key="1fvNq1OaFO9104mAW_jY3sQ9ViXOFgGw8", mime_type="video/*"),
         ]
         payload = payloads.ImportMediaFromDrive(drive_items)
         client = Client(self.cookies_txt)
@@ -55,11 +55,15 @@ class TestClient(unittest.TestCase):
 
     def test_CheckDownloadToken(self):
         """Client test."""
-        payload = payloads.CheckDownloadToken("857361d8-b724-4027-893e-632c426cae1a")
+        payload = payloads.CheckDownloadToken("1171e428-86ff-4645-bdef-ed9ba7950d12")
         with Client(self.cookies_txt) as client:
             response = client.send_api_request([payload])
         for r in response:
             print(r.data)
+            resp = client.session.get(r.data.download_url)
+            print(resp.status_code)
+            with open("file.zip", "wb") as f:
+                f.write(resp.content)
         print(response)
 
     def test_GetDownloadToken(self):
@@ -330,6 +334,29 @@ class TestClient(unittest.TestCase):
         for r in response:
             print(r.data)
         print(response)
+
+    def test_GetUnsupportedVideos(self):
+        """Client test."""
+        payload = payloads.GetUnsupportedVideos()
+        with Client(self.cookies_txt) as client:
+            response = client.send_api_request([payload])
+        for r in response:
+            print(r.data)
+        print(response)
+
+    def test_GetUnsupportedVideoDownloadUrl(self):
+        """Client test."""
+        # First get the list of unsupported videos
+        list_payload = payloads.GetUnsupportedVideos()
+        with Client(self.cookies_txt) as client:
+            list_response = client.send_api_request([list_payload])
+            media_keys = [item.media_key for item in list_response[0].data.items[:2]]
+            # Then get the download URL for the first 2
+            dl_payload = payloads.GetUnsupportedVideoDownloadUrl(media_keys)
+            dl_response = client.send_api_request([dl_payload])
+            for r in dl_response:
+                print(r.data)
+            print(dl_response)
 
 
 if __name__ == "__main__":

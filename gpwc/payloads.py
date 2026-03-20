@@ -513,6 +513,44 @@ class SavePartnerSharedMedia(Payload):
         self.data = [[[key] for key in item_media_keys]]
 
 
+class GetUnsupportedVideos(Payload):
+    def __init__(
+        self,
+        page_token: Optional[str] = None,
+        parse_response: bool = True,
+    ):
+        """Get list of unsupported videos in the library"""
+        super().__init__()
+        self.parse_response = parse_response
+        self.rpcid = "TLvKMb"
+        self.data = [page_token]
+
+    class ApiResponse(ApiResponse):
+        data: parser.UnsupportedVideosPage
+
+    def execute(self, client: "Client") -> ApiResponse:
+        return super().execute(client)
+
+
+class GetUnsupportedVideoDownloadUrl(Payload):
+    def __init__(
+        self,
+        media_keys: list[str],
+        parse_response: bool = True,
+    ):
+        """Get download URL for unsupported videos"""
+        super().__init__()
+        self.parse_response = parse_response
+        self.rpcid = "pLFTfd"
+        self.data = [media_keys, None, None, 1]
+
+    class ApiResponse(ApiResponse):
+        data: str
+
+    def execute(self, client: "Client") -> ApiResponse:
+        return super().execute(client)
+
+
 class ImportMediaFromDrive(Payload):
     def __init__(
         self,

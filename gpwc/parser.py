@@ -559,6 +559,42 @@ class StorageQuota:
 
 
 @dataclass
+class UnsupportedVideo:
+    media_key: str
+    file_name: str
+    file_size: int
+    timestamp: int
+    thumbnail_url: str
+    download_url: str
+    dedup_key: str
+
+    @classmethod
+    def from_data(cls, item_data):
+        return cls(
+            media_key=safe_get(item_data, 0),
+            file_name=safe_get(item_data, 1),
+            file_size=safe_get(item_data, 2),
+            timestamp=safe_get(item_data, 3),
+            thumbnail_url=safe_get(item_data, 4),
+            download_url=safe_get(item_data, 5),
+            dedup_key=safe_get(item_data, 6),
+        )
+
+
+@dataclass
+class UnsupportedVideosPage:
+    items: list[UnsupportedVideo]
+    next_page_token: Optional[str]
+
+    @classmethod
+    def from_data(cls, data):
+        return cls(
+            items=[UnsupportedVideo.from_data(item) for item in safe_get(data, 1) or []],
+            next_page_token=safe_get(data, 0) or None,
+        )
+
+
+@dataclass
 class Download:
     file_name: str
     download_url: int
@@ -605,5 +641,9 @@ def parse_response_data(rpc_id: str, data: dict):
             return PartnerSharedMediaPage.from_data(data)
         case "SusGud":
             return [ImportedDriveMedia.from_data(item) for item in safe_get(data, 0) or []]
+        case "TLvKMb":
+            return UnsupportedVideosPage.from_data(data)
+        case "pLFTfd":
+            return safe_get(data, 0)
         case _:
             return {}
