@@ -53,7 +53,7 @@ class Client:
         """Parse data from photos.google.com html body"""
         xml_page = html.fromstring(page_body)
         script_text: str = xml_page.xpath('//script[@data-id="_gd"]/text()')[0]
-        script_json = script_text.replace("window.WIZ_global_data = ", "").replace(";", "")
+        script_json = script_text.replace("window.WIZ_global_data = ", "").rstrip().rstrip(";")
         return json.loads(script_json)
 
     def load_cookies_from_file(self, path: str | Path) -> MozillaCookieJar:
@@ -119,7 +119,9 @@ class Client:
                 success = True
             response_id = response[0][6]
             response_rpcid = response[0][1]
-            parse_response = next(payload.parse_response for payload in payloads if payload.payload_id == response_id)
+            parse_response = next(
+                (payload.parse_response for payload in payloads if payload.payload_id == response_id), False
+            )
             api_response = ApiResponse(
                 rpcid=response_rpcid,
                 success=success,

@@ -301,7 +301,7 @@ class SharedLink:
             media_key=safe_get(data, 6),
             auth_key=safe_get(data, 7),
             link_id=safe_get(data, 17),
-            members=[Actor.from_data(actor_data) for actor_data in safe_get(data, 9)],
+            members=[Actor.from_data(actor_data) for actor_data in safe_get(data, 9) or []],
             owner=Actor.from_data(safe_get(data, 10, 0)),
         )
 
@@ -425,7 +425,7 @@ class AlbumItem:
 @dataclass
 class AlbumPage:
     items: list[AlbumItem]
-    next_page_id: str
+    next_page_id: str | None
     media_key: str
     thumbnail_url: str
     title: str | None
@@ -439,7 +439,7 @@ class AlbumPage:
     @classmethod
     def from_data(cls, data):
         return cls(
-            items=[AlbumItem.from_data(item) for item in safe_get(data, 1)],
+            items=[AlbumItem.from_data(item) for item in safe_get(data, 1) or []],
             next_page_id=safe_get(data, 2),
             media_key=safe_get(data, 3, 0),
             thumbnail_url=safe_get(data, 3, 4, 0),
@@ -449,7 +449,7 @@ class AlbumPage:
             item_count=safe_get(data, 3, 21),
             last_activity_timestamp=safe_get(data, 3, 2, 9),
             auth_key=safe_get(data, 3, 19),
-            members=[Actor.from_data(actor_data) for actor_data in safe_get(data, 3, 9)],
+            members=[Actor.from_data(actor_data) for actor_data in safe_get(data, 3, 9) or []],
         )
 
 
@@ -463,9 +463,9 @@ class PartnerSharedItem:
     timezone_offset: int
     creation_timestamp: int
     dedup_key: str
-    is_saved: bool
-    live_photo_duration: int
-    video_duration: int
+    # is_saved: bool  # TODO: unknown parse path
+    live_photo_duration: int | None
+    video_duration: int | None
 
     @classmethod
     def from_data(cls, data):
@@ -478,8 +478,7 @@ class PartnerSharedItem:
             dedup_key=safe_get(data, 3),
             timezone_offset=safe_get(data, 4),
             creation_timestamp=safe_get(data, 5),
-            is_saved=safe_get(data, -1, "146008172", 1),
-            live_photo_duration=safe_get(data, 0),
+            live_photo_duration=safe_get(data, -1, "146008172", 1),
             video_duration=safe_get(data, -1, "76647426", 0),
         )
 
@@ -487,18 +486,18 @@ class PartnerSharedItem:
 @dataclass
 class PartnerSharedMediaPage:
     items: list[PartnerSharedItem]
-    next_page_id: str
+    next_page_id: str | None
     members: list[Actor]
-    parnter_actor_id: str
+    partner_actor_id: str
     gaia_id: str
 
     @classmethod
     def from_data(cls, data):
         return cls(
             next_page_id=safe_get(data, 0),
-            items=[PartnerSharedItem.from_data(item) for item in safe_get(data, 1)],
-            members=[Actor.from_data(item) for item in safe_get(data, 2)],
-            parnter_actor_id=safe_get(data, 4),
+            items=[PartnerSharedItem.from_data(item) for item in safe_get(data, 1) or []],
+            members=[Actor.from_data(item) for item in safe_get(data, 2) or []],
+            partner_actor_id=safe_get(data, 4),
             gaia_id=safe_get(data, 5),
         )
 
@@ -600,7 +599,7 @@ class UnsupportedVideosPage:
 @dataclass
 class Download:
     file_name: str
-    download_url: int
+    download_url: str
     download_size: int
     unzipped_size: int
 

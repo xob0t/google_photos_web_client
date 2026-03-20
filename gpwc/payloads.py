@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal
 
 from . import parser
 from .models import ApiResponse, DriveMedia
@@ -45,7 +45,7 @@ class GetLibraryPageByTakenDate(Payload):
         return super().execute(client)
 
 
-class GetLibarayPageByUploadedDate(Payload):
+class GetLibraryPageByUploadedDate(Payload):
     def __init__(
         self,
         page_id: str | None = None,
@@ -78,8 +78,8 @@ class GetSearchPage(Payload):
     class ApiResponse(ApiResponse):
         data: parser.LibraryGenericPage
 
-    @overload
-    def execute(self, client: "Client") -> tuple[parser.LibraryGenericPage, bool, str]: ...
+    def execute(self, client: "Client") -> ApiResponse:
+        return super().execute(client)
 
 
 class GetRemoteMatchesByHash(Payload):
@@ -349,13 +349,13 @@ class GetAlbumPage(Payload):
         self,
         media_key: str,
         page_id: str | None = None,
-        authKey: str | None = None,
+        auth_key: str | None = None,
         parse_response: bool = True,
     ):
         super().__init__()
         self.parse_response = parse_response
         self.rpcid = "snAcKc"
-        self.data = [media_key, page_id, None, authKey]
+        self.data = [media_key, page_id, None, auth_key]
 
     class ApiResponse(ApiResponse):
         data: parser.AlbumPage
@@ -396,11 +396,11 @@ class AddItemsToNewAlbum(Payload):
     def __init__(
         self,
         item_media_keys: list[str],
-        albumName: str,
+        album_name: str,
     ):
         super().__init__()
         self.rpcid = "E1Cajb"
-        self.data = [item_media_keys, None, albumName]
+        self.data = [item_media_keys, None, album_name]
 
 
 class AddItemsToExistingAlbum(Payload):

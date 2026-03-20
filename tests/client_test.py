@@ -165,7 +165,7 @@ class TestClient(unittest.TestCase):
 
     def test_GetFavoriteItems(self):
         """Client test."""
-        payload = payloads.GetTrashPage()
+        payload = payloads.GetFavoritesPage()
         with Client(self.cookies_txt) as client:
             response = client.send_api_request([payload])
         for r in response:
@@ -335,9 +335,9 @@ class TestClient(unittest.TestCase):
             response = client.send_api_request(payload)
             print(response.data)
 
-    def test_GetLibarayPageByUploadedDate(self):
+    def test_GetLibraryPageByUploadedDate(self):
         """Client context test."""
-        payload = payloads.GetLibarayPageByUploadedDate()
+        payload = payloads.GetLibraryPageByUploadedDate()
         with Client(self.cookies_txt) as client:
             response = client.send_api_request([payload])
         for r in response:

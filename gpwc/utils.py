@@ -31,21 +31,6 @@ def generate_id() -> str:
     return uuid.uuid4().hex
 
 
-def get_nested(data: list | dict, *indices: tuple[int], default: bool = None):
-    """
-    Safely get a nested value from lists or dictionaries using a sequence of
-    indices/keys without throwing errors for missing paths.
-    """
-    current = data
-    for idx in indices:
-        if current is None:
-            return default
-        try:
-            current = current[idx]
-        except (IndexError, KeyError, TypeError):
-            return default
-    return current
-
 
 def new_session_with_retries() -> requests.Session:
     """Create a new request session with retry mechanism"""
@@ -55,7 +40,7 @@ def new_session_with_retries() -> requests.Session:
     }
     s = requests.Session()
     s.headers.update(headers)
-    retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 502, 503, 504])
     adapter = HTTPAdapter(max_retries=retries)
     s.mount("http://", adapter)
     s.mount("https://", adapter)
@@ -64,9 +49,10 @@ def new_session_with_retries() -> requests.Session:
 
 def create_logger(log_level: str) -> logging.Logger:
     """Create main logger"""
-    logging.basicConfig(
-        level=log_level,
-        format="%(message)s",
-        datefmt="%H:%M:%S",
-    )
-    return logging.getLogger("main")
+    logger = logging.getLogger("gpwc")
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s", datefmt="%H:%M:%S"))
+        logger.addHandler(handler)
+    logger.setLevel(log_level)
+    return logger
