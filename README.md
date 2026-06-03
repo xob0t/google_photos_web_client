@@ -21,6 +21,16 @@ for item in response:
     print(item)
 ```
 
+## Multiple accounts
+
+If the browser session is logged into more than one Google account (added via Google's account switcher), the exported cookies hold all of them. Select an account with `account_index` — the `N` in `photos.google.com/u/N/`:
+
+```python
+client = Client(cookies_txt, account_index=1)
+```
+
+An `account_index` that is not present in the cookies raises a `ValueError`.
+
 ## Proper way to extract the cookies
 
 1. Install [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/Get%20cookies.txt%20LOCALLY/cclelndahbckbenkjhflpdbgdldlbecc)
