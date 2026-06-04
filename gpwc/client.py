@@ -20,9 +20,18 @@ class Client:
         self,
         cookies_txt_path: str | Path,
         log_level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"] = "INFO",
+        account_index: int = 0,
     ) -> None:
-        """ """
+        """
+        Args:
+            cookies_txt_path: Path to a netscape cookies.txt file.
+            log_level: Logging level.
+            account_index: Index of the Google account to use when the cookies hold a
+                multi-login session (the `N` in photos.google.com/u/N/).
+        """
         self.cookies_txt_path = cookies_txt_path
+        self.account_index = account_index
+        self.base_path = f"/u/{account_index}/" if account_index else "/"
         self.logger = utils.create_logger(log_level)
         self.session = utils.new_session_with_retries()
         self.load_cookies_in_session()
@@ -43,8 +52,10 @@ class Client:
 
     def get_global_data(self) -> dict:
         """Get and parse global_data from photos.google.com page"""
-        page_body = self.session.get("https://photos.google.com/").text
-        return self.parse_main_page(page_body)
+        response = self.session.get(f"https://photos.google.com{self.base_path}")
+        if self.account_index and f"/u/{self.account_index}/" not in response.url:
+            raise ValueError(f"account_index {self.account_index} not found in cookies (redirected to {response.url})")
+        return self.parse_main_page(response.text)
 
     def parse_main_page(self, page_body: str) -> dict:
         """Parse data from photos.google.com html body"""
@@ -76,7 +87,7 @@ class Client:
 
         querystring = {
             "rpcids": ",".join([payload.rpcid for payload in _payloads]),
-            "source-path": "/",
+            "source-path": self.base_path,
             "f.sid": self.global_data["FdrFJe"],
             "bl": self.global_data["cfb2h"],
             "rt": "c",
