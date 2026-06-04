@@ -19,14 +19,15 @@ class Client:
     def __init__(
         self,
         cookies_txt_path: str | Path,
-        account_index: int = 0,
         log_level: Literal["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"] = "INFO",
+        account_index: int = 0,
     ) -> None:
         """
-        :param cookies_txt_path: Path to a netscape cookies.txt file.
-        :param account_index: Index of the Google account to use when the cookies hold a
-            multi-login session (the `N` in photos.google.com/u/N/).
-        :param log_level: Logging level.
+        Args:
+            cookies_txt_path: Path to a netscape cookies.txt file.
+            log_level: Logging level.
+            account_index: Index of the Google account to use when the cookies hold a
+                multi-login session (the `N` in photos.google.com/u/N/).
         """
         self.cookies_txt_path = cookies_txt_path
         self.account_index = account_index
